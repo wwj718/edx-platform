@@ -26,6 +26,7 @@ from student.models import user_by_anonymous_id
 from submissions.models import score_set, score_reset
 
 from xmodule_django.models import CourseKeyField, LocationKeyField, BlockTypeKeyField
+from courseware.fields import UnsignedBigIntAutoField
 log = logging.getLogger(__name__)
 
 log = logging.getLogger("edx.courseware")
@@ -149,6 +150,28 @@ class StudentModule(models.Model):
         return unicode(repr(self))
 
 
+class StudentModuleHistoryArchive(models.Model):
+    """
+    An archive of StudentModuleHistory from before the primary key space extended.
+
+    This is only used in an interim fashion while migrating the data from the archive
+    into the new StudentModuleHistory table.
+    """
+    HISTORY_SAVING_TYPES = {'problem'}
+
+    class Meta(object):  # pylint: disable=missing-docstring
+        get_latest_by = "created"
+
+    student_module = models.ForeignKey(StudentModule, db_index=True)
+    version = models.CharField(max_length=255, null=True, blank=True, db_index=True)
+
+    # This should be populated from the modified field in StudentModule
+    created = models.DateTimeField(db_index=True)
+    state = models.TextField(null=True, blank=True)
+    grade = models.FloatField(null=True, blank=True)
+    max_grade = models.FloatField(null=True, blank=True)
+
+
 class StudentModuleHistory(models.Model):
     """Keeps a complete history of state changes for a given XModule for a given
     Student. Right now, we restrict this to problems so that the table doesn't
@@ -159,6 +182,8 @@ class StudentModuleHistory(models.Model):
     class Meta(object):
         app_label = "courseware"
         get_latest_by = "created"
+
+    id = UnsignedBigIntAutoField(primary_key=True)  # pylint: disable=invalid-name
 
     student_module = models.ForeignKey(StudentModule, db_index=True)
     version = models.CharField(max_length=255, null=True, blank=True, db_index=True)
@@ -187,6 +212,7 @@ class StudentModuleHistory(models.Model):
 
     def __unicode__(self):
         return unicode(repr(self))
+
 
 
 class XBlockFieldBase(models.Model):
