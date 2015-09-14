@@ -18,6 +18,7 @@ import itertools
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
+from django.db.models.fields import CharField
 from django.db.models.signals import post_save
 from django.dispatch import receiver, Signal
 
@@ -185,7 +186,13 @@ class StudentModuleHistory(models.Model):
 
     id = UnsignedBigIntAutoField(primary_key=True)  # pylint: disable=invalid-name
 
-    student_module = models.ForeignKey(StudentModule, db_index=True)
+    # These 3 keys uniquely identify the StudentModule that this record
+    # is associated with. It doesn't use a ForeignKey so that the table can be placed
+    # in a separate database.
+    course_key = CourseKeyField(max_length=255)
+    usage_key = UsageKeyField(max_length=255)
+    username = CharField(max_length=255)
+
     version = models.CharField(max_length=255, null=True, blank=True, db_index=True)
 
     # This should be populated from the modified field in StudentModule
@@ -202,12 +209,15 @@ class StudentModuleHistory(models.Model):
         we save.
         """
         if instance.module_type in StudentModuleHistory.HISTORY_SAVING_TYPES:
-            history_entry = StudentModuleHistory(student_module=instance,
-                                                 version=None,
-                                                 created=instance.modified,
-                                                 state=instance.state,
-                                                 grade=instance.grade,
-                                                 max_grade=instance.max_grade)
+            history_entry = StudentModuleHistory(
+                usage_key=instance.module_state_key,
+                course_key=instance.course_id,
+                username=instance.student.username,
+                version=None,
+                created=instance.modified,
+                state=instance.state,
+                grade=instance.grade,
+                max_grade=instance.max_grade)
             history_entry.save()
 
     def __unicode__(self):
