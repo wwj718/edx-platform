@@ -161,6 +161,7 @@ class StudentModuleHistoryArchive(models.Model):
 
     class Meta(object):  # pylint: disable=missing-docstring
         get_latest_by = "created"
+        db_table = "courseware_studentmodulehistory"
 
     student_module = models.ForeignKey(StudentModule, db_index=True)
     version = models.CharField(max_length=255, null=True, blank=True, db_index=True)
