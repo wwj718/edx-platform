@@ -285,6 +285,7 @@ class DjangoXBlockUserStateClient(XBlockUserStateClient):
         finish_time = time()
         self._ddog_histogram(evt_time, 'delete_many.response_time', (finish_time - evt_time) * 1000)
 
+    @donottrack(StudentModule, StudentModuleHistory)
     def get_history(self, username, block_key, scope=Scope.user_state):
         """
         Retrieve history of state changes for a given block for a given
