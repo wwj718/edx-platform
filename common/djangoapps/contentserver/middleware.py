@@ -4,10 +4,12 @@ Middleware to serve assets.
 
 import logging
 
+import datetime
 from django.http import (
     HttpResponse, HttpResponseNotModified, HttpResponseForbidden
 )
 from student.models import CourseEnrollment
+from contentserver.models import CourseAssetCacheTtlConfig
 
 from xmodule.assetstore.assetmgr import AssetManager
 from xmodule.contentstore.content import StaticContent, XASSET_LOCATION_TAG
@@ -64,7 +66,8 @@ class StaticContentServer(object):
                 pass
 
             # Check that user has access to content
-            if getattr(content, "locked", False):
+            is_locked = getattr(content, "locked", False)
+            if is_locked:
                 if not hasattr(request, "user") or not request.user.is_authenticated():
                     return HttpResponseForbidden('Unauthorized')
                 if not request.user.is_staff:
@@ -145,6 +148,19 @@ class StaticContentServer(object):
             response['Accept-Ranges'] = 'bytes'
             response['Content-Type'] = content.content_type
             response['Last-Modified'] = last_modified_at_str
+
+            # We want to instruct browsers and intermediate proxies/caches that this asset is
+            # cachable and for how long they're allowed.  `max-age` is primarily for browsers,
+            # while `s-maxage` is for intermediate proxies/caches.  We also specify an Expires
+            # header because it's cheap insurance to ensure we're getting across the message
+            # of how long this asset should be cached for.
+            cache_ttl = CourseAssetCacheTtlConfig.get_cache_ttl()
+            if cache_ttl > 0 and not is_locked:
+                expire_dt = datetime.datetime.utcnow() + datetime.timedelta(seconds=cache_ttl)
+                response['Expires'] = expire_dt.strftime("%a, %d %b %Y %H:%M:%S GMT")
+                response['Cache-Control'] = "public, max-age={ttl}, s-maxage={ttl}".format(ttl=cache_ttl)
+            elif is_locked:
+                response['Cache-Control'] = "private, no-cache, no-store"
 
             return response
 

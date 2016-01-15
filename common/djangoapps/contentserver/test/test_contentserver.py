@@ -10,6 +10,7 @@ from uuid import uuid4
 from django.conf import settings
 from django.test.client import Client
 from django.test.utils import override_settings
+from mock import patch
 
 from xmodule.contentstore.django import contentstore
 from xmodule.modulestore.django import modulestore
@@ -191,6 +192,58 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
             first=(self.length_unlocked), last=(self.length_unlocked))
         )
         self.assertEqual(resp.status_code, 416)
+
+    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    def test_cache_headers_with_ttl_unlocked(self, mock_get_cache_ttl):
+        """
+        Tests that when a cache TTL is set, an unlocked asset will be sent back with
+        the correct cache control/expires headers.
+        """
+        mock_get_cache_ttl.return_value = 10
+
+        resp = self.client.get(self.url_unlocked)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Expires', resp)
+        self.assertIn('Cache-Control: public, max-age=10, s-maxage=10', resp)
+
+    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    def test_cache_headers_with_ttl_locked(self, mock_get_cache_ttl):
+        """
+        Tests that when a cache TTL is set, a locked asset will be sent back without
+        any cache control/expires headers.
+        """
+        mock_get_cache_ttl.return_value = 10
+
+        resp = self.client.get(self.url_locked)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('Expires', resp)
+        self.assertIn('Cache-Control: private, no-cache, no-store', resp)
+
+    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    def test_cache_headers_without_ttl_unlocked(self, mock_get_cache_ttl):
+        """
+        Tests that when a cache TTL is not set, an unlocked asset will be sent back without
+        any cache control/expires headers.
+        """
+        mock_get_cache_ttl.return_value = 0
+
+        resp = self.client.get(self.url_unlocked)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('Expires', resp)
+        self.assertNotIn('Cache-Control', resp)
+
+    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    def test_cache_headers_without_ttl_locked(self, mock_get_cache_ttl):
+        """
+        Tests that when a cache TTL is not set, a locked asset will be sent back with a
+        cache-control header that indicates this asset should not be cached.
+        """
+        mock_get_cache_ttl.return_value = 0
+
+        resp = self.client.get(self.url_locked)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('Expires', resp)
+        self.assertIn('Cache-Control: private, no-cache, no-store', resp)
 
 
 @ddt.ddt

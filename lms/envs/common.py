@@ -1758,6 +1758,9 @@ INSTALLED_APPS = (
     'pipeline',
     'static_replace',
 
+    # For content serving
+    'contentserver',
+
     # Theming
     'openedx.core.djangoapps.theming',
 
