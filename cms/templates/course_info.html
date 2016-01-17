@@ -3,8 +3,9 @@
 <%namespace name='static' file='static_content.html'/>
 <%!
 from django.utils.translation import ugettext as _
-from django.template.defaultfilters import escapejs
-from openedx.core.lib.js_utils import escape_json_dumps
+from openedx.core.lib.js_utils import (
+    escape_jsoon_for_js, escape_string_for_js
+)
 %>
 
 ## TODO decode course # from context_course into title.
@@ -23,10 +24,10 @@ from openedx.core.lib.js_utils import escape_json_dumps
 <%block name="requirejs">
   require(["js/factories/course_info"], function(CourseInfoFactory) {
       CourseInfoFactory(
-        "${updates_url}",
-        "${handouts_locator | escapejs}",
-        "${base_asset_url}",
-        ${escape_json_dumps(push_notification_enabled) | n}
+        "${updates_url | n,escape_string_for_js}",
+        "${handouts_locator | n,escape_string_for_js}",
+        "${base_asset_url | n,escape_string_for_js}",
+        ${push_notification_enabled | n,escape_jsoon_for_js}
        );
   });
 </%block>

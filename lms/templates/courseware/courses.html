@@ -2,7 +2,7 @@
   import json
   from django.utils.translation import ugettext as _
   from microsite_configuration import microsite
-  from openedx.core.lib.js_utils import escape_json_dumps
+  from openedx.core.lib.js_utils import escape_jsoon_for_js
 %>
 <%inherit file="../main.html" />
 <%
@@ -20,7 +20,7 @@
   % endfor
   <%static:require_module module_name="js/discovery/discovery_factory" class_name="DiscoveryFactory">
     DiscoveryFactory(
-      ${ escape_json_dumps(course_discovery_meanings) | n },
+      ${course_discovery_meanings | n,escape_jsoon_for_js},
       getParameterByName('search_query')
     );
   </%static:require_module>

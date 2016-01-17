@@ -4,7 +4,9 @@
 <%!
 from contentstore import utils
 from django.utils.translation import ugettext as _
-from openedx.core.lib.js_utils import escape_json_dumps
+from openedx.core.lib.js_utils import (
+    escape_jsoon_for_js, escape_string_for_js
+)
 %>
 
 <%block name="title">${_("Course Certificates")}</%block>
@@ -30,8 +32,16 @@ CMS.User.isGlobalStaff = '${is_global_staff}'=='True' ? true : false;
 
 <%block name="requirejs">
   require(["js/certificates/factories/certificates_page_factory"], function(CertificatesPageFactory) {
-      if(${escape_json_dumps(has_certificate_modes)}) {
-          CertificatesPageFactory(${escape_json_dumps(certificates) | n}, "${certificate_url}", "${course_outline_url}", ${escape_json_dumps(course_modes) | n}, ${escape_json_dumps(certificate_web_view_url) | n}, ${escape_json_dumps(is_active) | n}, ${escape_json_dumps(certificate_activation_handler_url) | n} );
+      if(${has_certificate_modes | n,escape_jsoon_for_js}) {
+          CertificatesPageFactory(
+              ${certificates | n,escape_jsoon_for_js},
+              "${certificate_url | n,escape_string_for_js}",
+              "${course_outline_url | n,escape_string_for_js}",
+              ${course_modes | n,escape_jsoon_for_js},
+              ${certificate_web_view_url | n,escape_jsoon_for_js},
+              ${is_active | n,escape_jsoon_for_js},
+              ${certificate_activation_handler_url | n,escape_jsoon_for_js}
+          );
       }
   });
 </%block>

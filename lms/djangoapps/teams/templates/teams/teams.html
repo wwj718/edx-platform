@@ -1,7 +1,11 @@
 ## mako
 <%! import json %>
-<%! from django.utils.translation import ugettext as _ %>
-<%! from openedx.core.lib.js_utils import escape_json_dumps %>
+<%!
+from django.utils.translation import ugettext as _
+from openedx.core.lib.js_utils import (
+    escape_jsoon_for_js, escape_string_for_js
+)
+%>
 <%namespace name='static' file='/static_content.html'/>
 <%inherit file="/main.html" />
 
@@ -33,20 +37,20 @@
 
 <%static:require_module module_name="teams/js/teams_tab_factory" class_name="TeamsTabFactory">
     TeamsTabFactory({
-        courseID: '${ unicode(course.id) }',
-        topics: ${ escape_json_dumps(topics) | n },
-        userInfo: ${ escape_json_dumps(user_info) | n },
-        topicUrl: '${ topic_url }',
-        topicsUrl: '${ topics_url }',
-        teamsUrl: '${ teams_url }',
-        teamsDetailUrl: '${ teams_detail_url }',
-        teamMembershipsUrl: '${ team_memberships_url }',
-        teamMembershipDetailUrl: '${ team_membership_detail_url }',
-        myTeamsUrl: '${ my_teams_url }',
-        maxTeamSize: ${ course.teams_max_size },
-        languages: ${ escape_json_dumps(languages) | n },
-        countries: ${ escape_json_dumps(countries) | n },
-        teamsBaseUrl: '${ teams_base_url }'
+        courseID: '${unicode(course.id) | n,escape_string_for_js}',
+        topics: ${topics | n,escape_jsoon_for_js},
+        userInfo: ${user_info | n,escape_jsoon_for_js},
+        topicUrl: '${topic_url | n,escape_string_for_js}',
+        topicsUrl: '${topics_url | n,escape_string_for_js}',
+        teamsUrl: '${teams_url | n,escape_string_for_js}',
+        teamsDetailUrl: '${teams_detail_url | n,escape_string_for_js}',
+        teamMembershipsUrl: '${team_memberships_url | n,escape_string_for_js}',
+        teamMembershipDetailUrl: '${team_membership_detail_url | n,escape_string_for_js}',
+        myTeamsUrl: '${my_teams_url | n,escape_string_for_js}',
+        maxTeamSize: ${course.teams_max_size},
+        languages: ${languages | n,escape_jsoon_for_js},
+        countries: ${countries | n,escape_jsoon_for_js},
+        teamsBaseUrl: '${teams_base_url | n,escape_string_for_js}'
     });
 </%static:require_module>
 </%block>

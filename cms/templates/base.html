@@ -3,7 +3,7 @@
 <%!
 from django.utils.translation import ugettext as _
 from openedx.core.lib.js_utils import (
-    escape_json_dumps, escape_js_string
+    escape_jsoon_for_js, escape_string_for_js
 )
 %>
 <!doctype html>
@@ -42,7 +42,7 @@ from openedx.core.lib.js_utils import (
     <a class="nav-skip" href="#content">${_("Skip to main content")}</a>
 
     <script type="text/javascript">
-      window.baseUrl = "${escape_js_string(settings.STATIC_URL) | n}";
+      window.baseUrl = "${settings.STATIC_URL | n,escape_string_for_js}";
       var require = {baseUrl: window.baseUrl};
     </script>
     <script type="text/javascript" src="${static.url("js/vendor/require.js")}"></script>
@@ -80,14 +80,14 @@ from openedx.core.lib.js_utils import (
             % if context_course:
               require(['js/factories/course'], function(CourseFactory) {
                   CourseFactory({
-                      id: "${escape_js_string(context_course.id) | n}",
+                      id: "${context_course.id | n,escape_string_for_js}",
                       name: "${context_course.display_name_with_default_escaped | h}",
                       url_name: "${context_course.location.name | h}",
                       org: "${context_course.location.org | h}",
                       num: "${context_course.location.course | h}",
                       display_course_number: "${_(context_course.display_coursenumber) if context_course.display_coursenumber else ''}",
                       revision: "${context_course.location.revision | h}",
-                      self_paced: ${escape_json_dumps(context_course.self_paced) | n}
+                      self_paced: ${context_course.self_paced | n,escape_jsoon_for_js}
                   });
               });
             % endif

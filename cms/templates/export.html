@@ -11,7 +11,9 @@ else:
 
 <%!
   from django.utils.translation import ugettext as _
-  from openedx.core.lib.js_utils import escape_json_dumps
+  from openedx.core.lib.js_utils import (
+      escape_jsoon_for_js, escape_string_for_js
+  )
 %>
 <%block name="title">
 %if library:
@@ -24,11 +26,11 @@ else:
 
 <%block name="requirejs">
 % if in_err:
-  var hasUnit = ${escape_json_dumps(bool(unit)) | n},
-      editUnitUrl = "${edit_unit_url or ""}",
-      courselikeHomeUrl = "${courselike_home_url or ""}",
-      is_library = ${escape_json_dumps(library) | n}
-      errMsg = ${escape_json_dumps(raw_err_msg or "") | n};
+  var hasUnit = ${bool(unit) | n,escape_jsoon_for_js},
+      editUnitUrl = "${edit_unit_url or "" | n,escape_string_for_js}",
+      courselikeHomeUrl = "${courselike_home_url or "" | n,escape_string_for_js}",
+      is_library = ${library | n,escape_jsoon_for_js}
+      errMsg = ${raw_err_msg or "" | n,escape_jsoon_for_js};
 
   require(["js/factories/export"], function(ExportFactory) {
       ExportFactory(hasUnit, editUnitUrl, courselikeHomeUrl, is_library, errMsg);

@@ -2,7 +2,7 @@
 <%!
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
-from openedx.core.lib.js_utils import escape_json_dumps
+from openedx.core.lib.js_utils import escape_jsoon_for_js
 %>
 <%def name="online_help_token()"><% return "team_course" %></%def>
 <%block name="title">${_("Course Team Settings")}</%block>
@@ -115,7 +115,7 @@ from openedx.core.lib.js_utils import escape_json_dumps
   require(["js/factories/manage_users"], function(ManageCourseUsersFactory) {
       ManageCourseUsersFactory(
         "${context_course.display_name | h}",
-        ${escape_json_dumps(users) | n},
+        ${users | n,escape_jsoon_for_js},
         "${reverse('contentstore.views.course_team_handler', kwargs={'course_key_string': unicode(context_course.id), 'email': '@@EMAIL@@'})}",
         ${ request.user.id },
         ${str(allow_actions).lower()}

@@ -4,7 +4,7 @@ from django.http import (HttpResponse, HttpResponseServerError,
                          HttpResponseNotFound)
 from edxmako.shortcuts import render_to_string, render_to_response
 import functools
-from openedx.core.lib.js_utils import escape_json_dumps
+from openedx.core.lib.js_utils import escape_jsoon_for_js
 
 __all__ = ['not_found', 'server_error', 'render_404', 'render_500']
 
@@ -18,7 +18,7 @@ def jsonable_error(status=500, message="The Studio servers encountered an error"
         @functools.wraps(func)
         def inner(request, *args, **kwargs):
             if request.is_ajax():
-                content = escape_json_dumps({"error": message})
+                content = escape_jsoon_for_js({"error": message})
                 return HttpResponse(content, content_type="application/json",
                                     status=status)
             else:

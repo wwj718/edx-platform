@@ -2,7 +2,7 @@
 from django.utils.translation import ugettext as _
 from contentstore.views.helpers import xblock_studio_url
 from contentstore.utils import is_visible_to_specific_content_groups
-from openedx.core.lib.js_utils import escape_json_dumps
+from openedx.core.lib.js_utils import escape_jsoon_for_js
 %>
 <%
 xblock_url = xblock_studio_url(xblock)
@@ -24,7 +24,7 @@ messages = xblock.validate().to_json()
 <script>
     require(["jquery", "js/factories/xblock_validation"], function($, XBlockValidationFactory) {
         XBlockValidationFactory(
-            ${escape_json_dumps(messages) | n},
+            ${messages | n,escape_jsoon_for_js},
             $.parseJSON("${bool(xblock_url)}".toLowerCase()),  // xblock_url will be None or a string
             $.parseJSON("${bool(is_root)}".toLowerCase()),  // is_root will be None or a boolean
             $('div.xblock-validation-messages[data-locator="${xblock.location | h}"]')
