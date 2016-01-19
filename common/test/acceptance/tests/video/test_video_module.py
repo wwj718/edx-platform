@@ -633,11 +633,11 @@ class YouTubeVideoTest(VideoBaseTest):
         And videos "E,F" in "Youtube" mode in position "2" of sequential
         """
         self.verticals = [
-            [{'display_name': 'A'}, {'display_name': 'B'}], [{'display_name': 'C'}, {'display_name': 'D'}]
+            [{'display_name': 'a'}, {'display_name': 'b'}], [{'display_name': 'c'}, {'display_name': 'd'}]
         ]
 
-        tab1_video_names = ['A', 'B']
-        tab2_video_names = ['C', 'D']
+        tab1_video_names = ['a', 'b']
+        tab2_video_names = ['c', 'd']
 
         def execute_video_steps(video_names):
             """
@@ -671,22 +671,22 @@ class YouTubeVideoTest(VideoBaseTest):
         And a video "C" in "HTML5" mode in position "3" of sequential
         """
         self.verticals = [
-            [{'display_name': 'A'}], [{'display_name': 'B'}],
-            [{'display_name': 'C', 'metadata': self.metadata_for_mode('html5')}]
+            [{'display_name': 'a'}], [{'display_name': 'b'}],
+            [{'display_name': 'c', 'metadata': self.metadata_for_mode('html5')}]
         ]
 
         self.navigate_to_video()
 
         # select the "2.0" speed on video "A"
-        self.course_nav.go_to_sequential('A')
+        self.course_nav.go_to_sequential('a')
         self.video.speed = '2.0'
 
         # select the "0.50" speed on video "B"
-        self.course_nav.go_to_sequential('B')
+        self.course_nav.go_to_sequential('b')
         self.video.speed = '0.50'
 
         # open video "C"
-        self.course_nav.go_to_sequential('C')
+        self.course_nav.go_to_sequential('c')
 
         # Since the playback speed was set to .5 in "B", this video will also be impacted
         # because a playback speed has never explicitly been set for it. However, this video
@@ -694,7 +694,7 @@ class YouTubeVideoTest(VideoBaseTest):
         self.video.verify_speed_changed('0.75x')
 
         # open video "A"
-        self.course_nav.go_to_sequential('A')
+        self.course_nav.go_to_sequential('a')
 
         # Video "A" should still play at speed 2.0 because it was explicitly set to that.
         self.assertEqual(self.video.speed, '2.0x')
@@ -703,7 +703,7 @@ class YouTubeVideoTest(VideoBaseTest):
         self.video.reload_page()
 
         # open video "A"
-        self.course_nav.go_to_sequential('A')
+        self.course_nav.go_to_sequential('a')
 
         # check if video "A" should start playing at speed "2.0"
         self.assertEqual(self.video.speed, '2.0x')
@@ -712,13 +712,13 @@ class YouTubeVideoTest(VideoBaseTest):
         self.video.speed = '1.0'
 
         # open video "B"
-        self.course_nav.go_to_sequential('B')
+        self.course_nav.go_to_sequential('b')
 
         # Video "B" should still play at speed .5 because it was explicitly set to that.
         self.assertEqual(self.video.speed, '0.50x')
 
         # open video "C"
-        self.course_nav.go_to_sequential('C')
+        self.course_nav.go_to_sequential('c')
 
         # The change of speed for Video "A" should  impact Video "C" because it still has
         # not been explicitly set to a speed.
@@ -875,12 +875,12 @@ class YouTubeVideoTest(VideoBaseTest):
         }
 
         self.verticals = [
-            [{'display_name': 'A'}, {'display_name': 'B', 'metadata': self.metadata_for_mode('html5')}],
-            [{'display_name': 'C'}]
+            [{'display_name': 'a'}, {'display_name': 'b', 'metadata': self.metadata_for_mode('html5')}],
+            [{'display_name': 'c'}]
         ]
 
-        tab1_video_names = ['A', 'B']
-        tab2_video_names = ['C']
+        tab1_video_names = ['a', 'b']
+        tab2_video_names = ['c']
 
         def execute_video_steps(video_names):
             """
@@ -896,7 +896,7 @@ class YouTubeVideoTest(VideoBaseTest):
         self.course_fixture.add_advanced_settings(additional_data)
         self.navigate_to_video_no_render()
 
-        self.video.use_video('B')
+        self.video.use_video('b')
         self.assertTrue(self.video.is_poster_shown)
         self.video.click_on_poster()
         self.video.wait_for_video_bumper_render()
@@ -907,8 +907,8 @@ class YouTubeVideoTest(VideoBaseTest):
         self.video.wait_for_video_player_render()
         self.assertIn(self.video.state, ['playing', 'buffering', 'finished'])
 
-        self.video.use_video('A')
-        execute_video_steps(['A'])
+        self.video.use_video('a')
+        execute_video_steps(['a'])
 
         # go to second sequential position
         self.course_nav.go_to_sequential_position(2)
