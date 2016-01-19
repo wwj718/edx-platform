@@ -114,17 +114,17 @@ def when_i_navigate_to_an_item_in_a_sequence(step):
 
 @step(u'I see the content of the section')
 def then_i_see_the_content_of_the_section(step):
-    wait_for_problem('PROBLEM 2')
+    wait_for_problem('Problem 2')
 
 
 @step(u'I see the content of the subsection')
 def then_i_see_the_content_of_the_subsection(step):
-    wait_for_problem('PROBLEM 4')
+    wait_for_problem('Problem 4')
 
 
 @step(u'I see the content of the sequence item')
 def then_i_see_the_content_of_the_sequence_item(step):
-    wait_for_problem('PROBLEM 6')
+    wait_for_problem('Problem 6')
 
 
 @step(u'I return to the courseware')
