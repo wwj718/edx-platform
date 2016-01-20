@@ -68,3 +68,8 @@ class XBlockDeprecatedAdvancedComponentConfig(ConfigurationModel):
             return ()
 
         return config.disabled_blocks.split()
+
+    @classmethod
+    def __unicode__(cls):
+        config = cls.current()
+        return u"Deprectaed xblock types are {deprecated_xblocks}".format(deprecated_xblocks=config.disabled_blocks)
