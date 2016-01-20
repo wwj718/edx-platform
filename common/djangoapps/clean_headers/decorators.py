@@ -14,8 +14,14 @@ def clean_headers(*headers):
     This decorator is not safe for multiple uses: each call will overwrite any previously set values.
     """
     def _decorator(func):
+        """
+        Decorates the given function.
+        """
         @wraps(func)
         def _inner(*args, **kwargs):
+            """
+            Alters the response.
+            """
             response = func(*args, **kwargs)
             response.clean_headers = headers
             return response
