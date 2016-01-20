@@ -137,8 +137,7 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         first_byte = self.length_unlocked / 4
         last_byte = self.length_unlocked / 2
         resp = self.client.get(self.url_unlocked, HTTP_RANGE='bytes={first}-{last}'.format(
-            first=first_byte, last=last_byte)
-        )
+            first=first_byte, last=last_byte))
 
         self.assertEqual(resp.status_code, 206)  # HTTP_206_PARTIAL_CONTENT
         self.assertEqual(resp['Content-Range'], 'bytes {first}-{last}/{length}'.format(
@@ -152,8 +151,7 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         first_byte = self.length_unlocked / 4
         last_byte = self.length_unlocked / 2
         resp = self.client.get(self.url_unlocked, HTTP_RANGE='bytes={first}-{last}, -100'.format(
-            first=first_byte, last=last_byte)
-        )
+            first=first_byte, last=last_byte))
 
         self.assertEqual(resp.status_code, 200)
         self.assertNotIn('Content-Range', resp)
@@ -179,8 +177,7 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         416 Requested Range Not Satisfiable.
         """
         resp = self.client.get(self.url_unlocked, HTTP_RANGE='bytes={first}-{last}'.format(
-            first=(self.length_unlocked / 2), last=(self.length_unlocked / 4))
-        )
+            first=(self.length_unlocked / 2), last=(self.length_unlocked / 4)))
         self.assertEqual(resp.status_code, 416)
 
     def test_range_request_malformed_out_of_bounds(self):
@@ -189,11 +186,10 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         outputs 416 Requested Range Not Satisfiable.
         """
         resp = self.client.get(self.url_unlocked, HTTP_RANGE='bytes={first}-{last}'.format(
-            first=(self.length_unlocked), last=(self.length_unlocked))
-        )
+            first=(self.length_unlocked), last=(self.length_unlocked)))
         self.assertEqual(resp.status_code, 416)
 
-    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    @patch('contentserver.models.CourseAssetCacheTtlConfig.get_cache_ttl')
     def test_cache_headers_with_ttl_unlocked(self, mock_get_cache_ttl):
         """
         Tests that when a cache TTL is set, an unlocked asset will be sent back with
@@ -204,9 +200,9 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         resp = self.client.get(self.url_unlocked)
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Expires', resp)
-        self.assertIn('Cache-Control: public, max-age=10, s-maxage=10', resp)
+        self.assertEquals('public, max-age=10, s-maxage=10', resp['Cache-Control'])
 
-    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    @patch('contentserver.models.CourseAssetCacheTtlConfig.get_cache_ttl')
     def test_cache_headers_with_ttl_locked(self, mock_get_cache_ttl):
         """
         Tests that when a cache TTL is set, a locked asset will be sent back without
@@ -214,12 +210,16 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         """
         mock_get_cache_ttl.return_value = 10
 
+        CourseEnrollment.enroll(self.non_staff_usr, self.course_key)
+        self.assertTrue(CourseEnrollment.is_enrolled(self.non_staff_usr, self.course_key))
+
+        self.client.login(username=self.non_staff_usr, password=self.non_staff_pwd)
         resp = self.client.get(self.url_locked)
         self.assertEqual(resp.status_code, 200)
         self.assertNotIn('Expires', resp)
-        self.assertIn('Cache-Control: private, no-cache, no-store', resp)
+        self.assertEquals('private, no-cache, no-store', resp['Cache-Control'])
 
-    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    @patch('contentserver.models.CourseAssetCacheTtlConfig.get_cache_ttl')
     def test_cache_headers_without_ttl_unlocked(self, mock_get_cache_ttl):
         """
         Tests that when a cache TTL is not set, an unlocked asset will be sent back without
@@ -232,7 +232,7 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         self.assertNotIn('Expires', resp)
         self.assertNotIn('Cache-Control', resp)
 
-    @patch('contentserver.CourseAssetCacheTtlConfig.get_cache_ttl')
+    @patch('contentserver.models.CourseAssetCacheTtlConfig.get_cache_ttl')
     def test_cache_headers_without_ttl_locked(self, mock_get_cache_ttl):
         """
         Tests that when a cache TTL is not set, a locked asset will be sent back with a
@@ -240,11 +240,28 @@ class ContentStoreToyCourseTest(ModuleStoreTestCase):
         """
         mock_get_cache_ttl.return_value = 0
 
+        CourseEnrollment.enroll(self.non_staff_usr, self.course_key)
+        self.assertTrue(CourseEnrollment.is_enrolled(self.non_staff_usr, self.course_key))
+
+        self.client.login(username=self.non_staff_usr, password=self.non_staff_pwd)
         resp = self.client.get(self.url_locked)
         self.assertEqual(resp.status_code, 200)
         self.assertNotIn('Expires', resp)
-        self.assertIn('Cache-Control: private, no-cache, no-store', resp)
+        self.assertEquals('private, no-cache, no-store', resp['Cache-Control'])
 
+    def test_response_no_vary_header_unlocked(self):
+        resp = self.client.get(self.url_unlocked)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('Vary', resp)
+
+    def test_response_no_vary_header_locked(self):
+        CourseEnrollment.enroll(self.non_staff_usr, self.course_key)
+        self.assertTrue(CourseEnrollment.is_enrolled(self.non_staff_usr, self.course_key))
+
+        self.client.login(username=self.non_staff_usr, password=self.non_staff_pwd)
+        resp = self.client.get(self.url_locked)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('Vary', resp)
 
 @ddt.ddt
 class ParseRangeHeaderTestCase(unittest.TestCase):
