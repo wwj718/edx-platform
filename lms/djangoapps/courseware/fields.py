@@ -3,10 +3,6 @@ Custom fields for use in the courseware django app.
 """
 
 from django.db.models.fields import AutoField
-from south.modelsinspector import add_introspection_rules
-
-
-add_introspection_rules([], [r"^courseware\.fields\.UnsignedBigIntAutoField"])
 
 
 class UnsignedBigIntAutoField(AutoField):
