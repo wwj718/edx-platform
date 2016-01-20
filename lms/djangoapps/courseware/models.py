@@ -26,7 +26,7 @@ from model_utils.models import TimeStampedModel
 from student.models import user_by_anonymous_id
 from submissions.models import score_set, score_reset
 
-from xmodule_django.models import CourseKeyField, LocationKeyField, BlockTypeKeyField
+from xmodule_django.models import CourseKeyField, LocationKeyField, BlockTypeKeyField, UsageKeyField
 from courseware.fields import UnsignedBigIntAutoField
 
 log = logging.getLogger("edx.courseware")
