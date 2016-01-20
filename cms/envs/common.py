@@ -746,6 +746,7 @@ INSTALLED_APPS = (
 
     # For CMS
     'contentstore',
+    'contentserver',
     'course_creators',
     'external_auth',
     'student',  # misleading name due to sharing with lms
