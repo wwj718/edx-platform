@@ -25,30 +25,30 @@
     // this area.
     // -------------------------------------------------------------------
 
-    // The text that appears on the upper part of the dialog box when
-    // entering links.
+    // The text that appears on the dialog box when entering links.
     var linkDialogText = "<b>" + gettext("Insert Hyperlink") + "</b>",
-        linkUrlLabel = gettext("URL"),
         linkUrlHelpText = gettext("e.g. 'http://google.com/'"),
         linkDestinationLabel = gettext("Link Description"),
         linkDestinationHelpText = gettext("e.g. 'google'"),
+        linkDestinationError = gettext("Please provide a description of the link destination."),
         linkDefaultText = "http://"; // The default text that appears in input
 
+    // The text that appears on the dialog box when entering Images.
     var imageDialogText = gettext("Insert Image (upload file or type url)"),
-        imageUrlLabel = gettext("URL"),
-        imageUrlHelpText = (
-            gettext("Type in a URL or use the \"Choose File\" button to upload a file from your machine.")+
-            gettext("(e.g. 'http://example.com/img/clouds.jpg')")),
+        imageUrlHelpText = gettext("Type in a URL or use the \"Choose File\" button to upload a file from your machine. (e.g. 'http://example.com/img/clouds.jpg')"),  // jshint ignore:line
         imageDescriptionLabel = gettext("Image Description"),
         imageDefaultText = "http://", // The default text that appears in input
+        imageDescError = gettext("Please describe this image or agree that it has no contextual value by checking the checkbox."),  // jshint ignore:line
         imageDescriptionHelpText = gettext("e.g. 'Sky with clouds'.") +
             gettext("The description is helpful for users who cannot see the image.") +
             "<a href='http://www.w3.org/TR/html5/embedded-content-0.html#alt'> " +
             gettext("How to create useful text alternatives") + "</a>.",
-        imageIsDecorativeLabel = gettext(
-            "This image is for decorative purposes only and does not require a description.");
+        imageIsDecorativeLabel = gettext("This image is for decorative purposes only and does not require a description.");  // jshint ignore:line
 
-    var defaultHelpHoverTitle = gettext("Markdown Editing Help");
+    // Text that is shared between both link and image dialog boxes.
+    var defaultHelpHoverTitle = gettext("Markdown Editing Help"),
+        urlLabel = gettext("URL"),
+        urlError = gettext("Please provide a valid URL.");
 
     // -------------------------------------------------------------------
     //  END OF YOUR CHANGES
@@ -264,6 +264,10 @@
         this.preview = doc.getElementById("wmd-preview" + postfix);
         this.input = doc.getElementById("wmd-input" + postfix);
     };
+
+    util.isValidUrl = function(url) {
+        return /^((?:http|https|ftp):\/{2}|\/)[^]+$/.test(url);
+    }
 
     // Returns true if the DOM element is visible, false if it's hidden.
     // Checks if display is anything other than none.
@@ -1026,8 +1030,10 @@
     ui.prompt = function (title,
                           urlLabel,
                           urlHelp,
+                          urlError,
                           urlDescLabel,
                           urlDescHelp,
+                          urlDescError,
                           defaultInputText,
                           callback,
                           imageIsDecorativeLabel,
@@ -1052,6 +1058,13 @@
             }
         };
 
+        var clearFormErrorMessages = function () {
+            urlInput.classList.remove('has-error');
+            urlErrorMsg.style.display = 'none';
+            descInput.classList.remove('has-error');
+            descErrorMsg.style.display = 'none';
+        };
+
         // Dismisses the hyperlink input box.
         // isCancel is true if we don't care about the input text.
         // isCancel is false if we are going to keep the text.
@@ -1060,11 +1073,7 @@
             var url = urlInput.value.trim();
             var description = descInput.value.trim();
 
-            // reset the form to show no errors.
-            urlInput.classList.remove('has-error');
-            urlErrorMsg.style.display = 'none';
-            descInput.classList.remove('has-error');
-            descErrorMsg.style.display = 'none';
+            clearFormErrorMessages();
 
             if (isCancel) {
                 url = null;
@@ -1077,7 +1086,8 @@
                     url = 'http://' + url;
                 }
             }
-            var isValidUrl = /^((?:http|https|ftp):\/{2}|\/)[^]+$/.test(url),
+
+            var isValidUrl = util.isValidUrl(url),
                 isValidDesc = (
                     descInput.checkValidity() &&
                     (descInput.required ? description.length : true)
@@ -1087,20 +1097,25 @@
                 dialog.parentNode.removeChild(dialog);
                 callback(url, description);
             } else {
-                var error_count = 0;
+                var errorCount = 0;
                 if (!isValidUrl) {
                     urlInput.classList.add('has-error');
                     urlErrorMsg.style.display = 'inline-block';
-                    error_count += 1;
+                    errorCount += 1;
                 } if (!isValidDesc) {
                     descInput.classList.add('has-error');
                     descErrorMsg.style.display = 'inline-block';
-                    error_count += 1;
+                    errorCount += 1;
                 }
 
                 document.getElementById('wmd-editor-dialog-form-errors').textContent = [
-                    error_count,
-                    error_count === 1 ? gettext('error found in form.') : gettext('errors found in form.'),
+                    interpolate(
+                        ngettext(
+                            // Translators: 'errorCount' is the number of errors found in the form.
+                            '%(errorCount)s error found in form.', '%(errorCount)s errors found in form.',
+                            errorCount
+                        ), {'errorCount': errorCount}, true
+                    ),
                     !isValidUrl ? urlErrorMsg.textContent : '',
                     !isValidDesc ? descErrorMsg.textContent : ''
                 ].join(' ');
@@ -1113,75 +1128,24 @@
 
         // Create the text input box form/window.
         var createDialog = function () {
-            var fileUloadButtonHtml = imageUploadHandler ? (
-                    '<button id="file-upload-proxy" class="btn btn-primary btn-base form-btn">' +
-                        gettext("Choose File") +
-                    '</button>' +
-                    '<input type="file" name="file-upload" id="file-upload" style="display:none;"/>') : '',
-
-                imageIsDecorativeInputHtml = imageUploadHandler ? (
-                        '<label for="img-is-descriptive" class="field-label label-inline">' +
-                            '<input type="checkbox" id="img-is-descriptive" class="field-input input-checkbox">' +
-                            '<span class="field-input-label"> ' + imageIsDecorativeLabel + '</span>' +
-                        '</label>'
-                    ) : '',
-
-                descError = (imageUploadHandler ?
-                    gettext("Please describe this image or agree that it has no contextual " +
-                        "value by checking the checkbox.") :
-                    gettext("Please provide a description of the link destination.")
-                ),
-
-                urlError = gettext("Please provide a valid URL."),
-
-                dialogForm = '<h4 id="editor-dialog-title">' + title + '</h4>' +
-                    '<div role="status" id="wmd-editor-dialog-form-errors" class="sr" tabindex="-1"></div>' +
-                    '<div><form class="form">' +
-                        '<fieldset class="field-group">' +
-                            '<legend class="form-group-hd sr">'+ title +'</legend>' +
-                            '<div class="field' + (imageUploadHandler ? ' file-upload' : '') + '">' +
-                                '<label id="new-url-input-label" for="new-url-input" class="field-label">' +
-                                    urlLabel +
-                                '</label>' +
-                                '<input type="text" id="new-url-input" class="field-input input-text" ' +
-                                    'aria-describedby="new-url-input-help">' +
-                                fileUloadButtonHtml +
-                                '<div id="new-url-input-field-message" class="field-message has-error" ' +
-                                    'style="display:none">' +
-                                    '<span class="field-message-content">' +
-                                        urlError +
-                                    '</span>'+
-                                '</div>'+
-                                '<div id="new-url-input-help" class="field-hint">' +
-                                    urlHelp +
-                                '</div>' +
-                            '</div><div class="field">' +
-                                '<label for="new-url-desc-input" class="field-label">' + urlDescLabel + '</label>' +
-                                '<input type="text" id="new-url-desc-input" class="field-input input-text" required ' +
-                                    'aria-describedby="' +
-                                    'new-url-desc-input-help">' +
-                                '<div id="new-url-desc-input-field-message" class="field-message has-error" ' +
-                                    'style="display:none">' +
-                                    '<span class="field-message-content">' +
-                                        descError +
-                                    '</span>' +
-                                '</div>' +
-                                '<div id="new-url-desc-input-help" class="field-hint">' + urlDescHelp + '</div>' +
-                            '</div><div class="field">' +
-                                imageIsDecorativeInputHtml +
-                            '</div>' +
-                        '</fieldset>' +
-                        '<div class="form-actions">' +
-                            '<input type="button" id="new-link-image-ok" class="btn btn-primary btn-base form-btn" ' +
-                                'value="' + gettext("OK") + '" />' +
-                            '<input type="button" id="new-link-image-cancel" class="btn btn-primary btn-base ' +
-                                'form-btn" value="' + gettext("Cancel") + '" >' +
-                        '</div>' +
-                    '</form></div>';
-
             // The main dialog box.
             dialog = doc.createElement("div");
-            dialog.innerHTML = dialogForm;
+            dialog.innerHTML = _.template(
+                document.getElementById("customwmd-prompt-template").innerHTML, {
+                title: title,
+                uploadFieldClass: (imageUploadHandler ? 'file-upload' : ''),
+                urlLabel: urlLabel,
+                urlError: urlError,
+                urlHelp: urlHelp,
+                urlDescLabel: urlDescLabel,
+                descError: urlDescError,
+                urlDescHelp: urlDescHelp,
+                okText: gettext("OK"),
+                cancelText: gettext("Cancel"),
+                chooseFileText: gettext("Choose File"),
+                imageIsDecorativeLabel: imageIsDecorativeLabel,
+                imageUploadHandler: imageUploadHandler
+            });
             dialog.setAttribute("role", "dialog");
             dialog.setAttribute("tabindex", "-1");
             dialog.setAttribute("aria-labelledby", "editorDialogTitle");
@@ -1858,10 +1822,12 @@
                 if (!this.hooks.insertImageDialog(linkEnteredCallback)) {
                     ui.prompt(
                         imageDialogText,
-                        imageUrlLabel,
+                        urlLabel,
                         imageUrlHelpText,
+                        urlError,
                         imageDescriptionLabel,
                         imageDescriptionHelpText,
+                        imageDescError,
                         imageDefaultText,
                         linkEnteredCallback,
                         imageIsDecorativeLabel,
@@ -1872,10 +1838,12 @@
             else {
                 ui.prompt(
                     linkDialogText,
-                    linkUrlLabel,
+                    urlLabel,
                     linkUrlHelpText,
+                    urlError,
                     linkDestinationLabel,
                     linkDestinationHelpText,
+                    linkDestinationError,
                     linkDefaultText,
                     linkEnteredCallback
                 );
