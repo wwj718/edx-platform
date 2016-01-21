@@ -65,7 +65,7 @@ class XBlockDeprecatedAdvancedComponentConfig(ConfigurationModel):
 
         config = cls.current()
         if not config.enabled:
-            return ()
+            return []
 
         return config.disabled_blocks.split()
 

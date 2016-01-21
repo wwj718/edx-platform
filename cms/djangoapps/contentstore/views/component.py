@@ -81,11 +81,13 @@ def _advanced_component_types():
 
     # Merge settings list with one in the admin config;
     if hasattr(settings, 'DEPRECATED_ADVANCED_COMPONENT_TYPES'):
+        deprecated_xblock_types = list(deprecated_xblock_types)
         deprecated_xblock_types.extend(
             c_type for c_type in settings.DEPRECATED_ADVANCED_COMPONENT_TYPES if c_type not in deprecated_xblock_types
         )
 
     return [c_type for c_type in ADVANCED_COMPONENT_TYPES if c_type not in deprecated_xblock_types]
+
 
 def _load_mixed_class(category):
     """
