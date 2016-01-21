@@ -499,10 +499,15 @@ class EdxNotesPageTest(EventsTestMixin, EdxNotesTestMixin):
         """
         self.assertEqual(self.notes_page.count(), notes_count_on_current_page)
         self.assertEqual(self.notes_page.get_pagination_header_text(), header_text)
-        self.assertEqual(self.notes_page.is_previous_page_button_enabled(), previous_button_enabled)
-        self.assertEqual(self.notes_page.is_next_page_button_enabled(), next_button_enabled)
-        self.assertEqual(self.notes_page.get_current_page_number(), current_page_number)
-        self.assertEqual(self.notes_page.get_total_pages, total_pages)
+
+        if total_pages > 1:
+            self.assertEqual(self.notes_page.footer_visibility, True)
+            self.assertEqual(self.notes_page.is_previous_page_button_enabled(), previous_button_enabled)
+            self.assertEqual(self.notes_page.is_next_page_button_enabled(), next_button_enabled)
+            self.assertEqual(self.notes_page.get_current_page_number(), current_page_number)
+            self.assertEqual(self.notes_page.get_total_pages, total_pages)
+        else:
+            self.assertEqual(self.notes_page.footer_visibility, False)
 
     def search_and_verify(self):
         """
