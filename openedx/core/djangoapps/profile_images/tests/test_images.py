@@ -196,6 +196,7 @@ class TestGenerateProfileImages(TestCase):
         names_and_files = [v[0] for v in mock_storage.save.call_args_list]
         return names_and_files
 
+
 @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Profile Image API is only supported in LMS')
 class TestRemoveProfileImages(TestCase):
     """

@@ -4,6 +4,7 @@ Exceptions related to the handling of profile images
 
 from django.utils.translation import ugettext as _
 
+
 class ImageValidationError(Exception):
     """
     Exception to use when the system rejects a user-supplied source image.

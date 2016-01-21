@@ -219,5 +219,3 @@ def _user_friendly_size(size):
         size /= 1024
         i += 1
     return u'{} {}'.format(size, units[i])
-
-
