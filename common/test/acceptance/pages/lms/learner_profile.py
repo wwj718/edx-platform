@@ -45,7 +45,7 @@ class LearnerProfilePage(FieldsMixin, PageObject):
         """
         return all([
             self.q(css='body.view-profile .account-settings-container').present,
-            not self.q(css='ui-loading-indicator').visible
+            self.q(css='ui-loading-indicator').invisible
         ])
 
     @property
