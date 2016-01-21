@@ -1,3 +1,7 @@
+"""
+Middleware decorator for removing headers.
+"""
+
 from functools import wraps
 
 def clean_headers(*headers):

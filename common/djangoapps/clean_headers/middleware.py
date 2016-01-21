@@ -1,3 +1,7 @@
+"""
+Middleware used for cleaning headers from a response before it is sent to the end user.
+"""
+
 class CleanHeadersMiddleware(object):
     """
     Middleware that can drop headers present in a response.
