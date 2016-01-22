@@ -13,7 +13,7 @@
     margin-bottom: spacing-vertical(base);
     padding: 0 (gutter()*2);
 
-    @include susy-breakpoint($bp-medium, $susy) {
+    @include susy-breakpoint($bp-screen-md, $susy) {
         padding: 0 gutter();
     }
 }
@@ -91,7 +91,7 @@
             // CASE: icon display only
             &.icon-only {
 
-                @include susy-breakpoint($bp-medium, $susy) {
+                @include susy-breakpoint($bp-screen-md, $susy) {
                     padding: spacing-vertical(x-small) spacing-horizontal(base);
 
                     .icon {
@@ -100,7 +100,7 @@
                 }
             }
 
-            @include susy-breakpoint($bp-medium, $susy) {
+            @include susy-breakpoint($bp-screen-md, $susy) {
                 display: inline-block;
                 vertical-align: middle;
                 width: auto;
@@ -126,7 +126,7 @@
 
 .footer-app-copyright {
 
-    @include susy-breakpoint($bp-medium, $susy) {
+    @include susy-breakpoint($bp-screen-md, $susy) {
         @include span(6 first);
         margin-bottom: 0;
     }
@@ -134,7 +134,7 @@
 
 .footer-app-nav {
 
-    @include susy-breakpoint($bp-medium, $susy) {
+    @include susy-breakpoint($bp-screen-md, $susy) {
         @include span(6 last);
     }
 
@@ -144,7 +144,7 @@
             display: block;
             margin-bottom: spacing-vertical(x-small);
 
-            @include susy-breakpoint($bp-medium, $susy) {
+            @include susy-breakpoint($bp-screen-md, $susy) {
                 display: inline-block;
                 vertical-align: middle;
                 @include margin-right(spacing-horizontal(base));
@@ -155,7 +155,7 @@
 
     .list-legal {
 
-        @include susy-breakpoint($bp-medium, $susy) {
+        @include susy-breakpoint($bp-screen-md, $susy) {
             @include text-align(right);
         }
     }
@@ -222,7 +222,7 @@
                 @include margin-right(0);
             }
 
-            @include susy-breakpoint($bp-medium, $susy) {
+            @include susy-breakpoint($bp-screen-md, $susy) {
                 width: span(3);
             }
 
@@ -261,7 +261,7 @@
             vertical-align: middle;
             width: span(12);
 
-            @include susy-breakpoint($bp-medium, $susy) {
+            @include susy-breakpoint($bp-screen-md, $susy) {
                 width: span(4);
             }
 
@@ -300,7 +300,7 @@
                 padding-bottom: 0;
             }
 
-            @include susy-breakpoint($bp-medium, $susy) {
+            @include susy-breakpoint($bp-screen-md, $susy) {
                 @include gallery(4);
                 border-bottom: none;
                 padding-bottom: 0;
@@ -318,7 +318,7 @@
         .accomplishment-brief {
             margin-bottom: spacing-vertical(small);
 
-            @include susy-breakpoint($bp-medium, $susy) {
+            @include susy-breakpoint($bp-screen-md, $susy) {
                 @include gallery(6);
             }
 
@@ -343,7 +343,7 @@
                 margin-bottom: 0;
             }
 
-            @include susy-breakpoint($bp-medium, $susy) {
+            @include susy-breakpoint($bp-screen-md, $susy) {
                 @include gallery(6);
                 margin-bottom: 0;
             }
