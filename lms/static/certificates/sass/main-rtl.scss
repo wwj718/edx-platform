@@ -5,18 +5,14 @@
 
 // NOTE: This is the right to left (RTL) configured style compile. It should mirror main-ltr w/ the exception of bi-app references.
 
-// ------------------------------
-// #VENDOR
-// ------------------------------
-@import '../../../../static/vendor/bourbon/bourbon';
-@import '../../../../static/vendor/susy/susy';
-@import '../../../../static/vendor/breakpoint/breakpoint';
-@import '../../../../static/vendor/bi-app/bi-app-rtl';   // RTL support
 
 // ------------------------------
-// #UTILITIES
+// #LIB
 // ------------------------------
-@import '../../../../static/pattern-library/sass/utilities/variables-rtl';
+@import '../../../node_modules/edx-pattern-library/node_modules/bourbon/app/assets/stylesheets/bourbon';
+@import '../../../node_modules/edx-pattern-library/node_modules/susy/sass/susy';
+@import '../../../node_modules/edx-pattern-library/node_modules/breakpoint-sass/stylesheets/breakpoint';
+@import '../../../node_modules/edx-pattern-library/node_modules/bi-app-sass/bi-app/bi-app-rtl';
 
 // ------------------------------
 // #BUILD
