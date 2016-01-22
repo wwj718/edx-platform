@@ -211,15 +211,6 @@ class AccountCreationForm(forms.Form):
             if field not in self.fields:
                 self.fields[field] = forms.CharField(required=False)
 
-    def clean_email(self):
-        """
-        Checks is there already registered user with the given email
-        """
-        email = self.cleaned_data["email"]
-        if User.objects.filter(email__iexact=email).exists():
-            raise ValidationError(_("An account with the Email '{email}' already exists.").format(email=email))
-        return email
-
     def clean_password(self):
         """Enforce password policies (if applicable)"""
         password = self.cleaned_data["password"]
@@ -240,7 +231,7 @@ class AccountCreationForm(forms.Form):
 
     def clean_email(self):
         """ Enforce email restrictions (if applicable) """
-        email = self.cleaned_data["email"]
+        email = self.cleaned_data.get("email")
         if settings.REGISTRATION_EMAIL_PATTERNS_ALLOWED is not None:
             # This Open edX instance has restrictions on what email addresses are allowed.
             allowed_patterns = settings.REGISTRATION_EMAIL_PATTERNS_ALLOWED
@@ -252,6 +243,10 @@ class AccountCreationForm(forms.Form):
                 # reject the registration.
                 if not CourseEnrollmentAllowed.objects.filter(email=email).exists():
                     raise ValidationError(_("Unauthorized email address."))
+        if User.objects.filter(email__iexact=email).exists():
+            raise ValidationError(_(
+                "It looks like {email} belongs to an existing account. Try again with different email address.").format(
+                email=email))
         return email
 
     def clean_year_of_birth(self):
@@ -269,9 +264,7 @@ class AccountCreationForm(forms.Form):
         """
         Remove the leading and trailing spaces from the name
         """
-        name = self.cleaned_data['name']
-        name = name.strip() if name else name
-        return name
+        return self.cleaned_data.get('name', '').strip()
 
     @property
     def cleaned_extended_profile(self):
