@@ -1603,7 +1603,9 @@ REQUIRE_EXCLUDE = ("build.txt",)
 # and defines some "args" function that returns a list with the command arguments to execute.
 REQUIRE_ENVIRONMENT = "node"
 
-
+REQUIRE_JS_PATH_OVERRIDES = {
+    'lmsBookmarkButton': PROJECT_ROOT / 'static/js/bookmarks/views/bookmark_button.js'
+}
 ################################# CELERY ######################################
 
 # Message configuration

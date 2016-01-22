@@ -2,7 +2,7 @@
 window.VerticalStudentView = function (runtime, element) {
 
     'use strict';
-    RequireJS.require(['js/bookmarks/views/bookmark_button'], function (BookmarkButton) {
+    RequireJS.require(['lmsBookmarkButton'], function (BookmarkButton) {
         var $element = $(element);
         var $bookmarkButtonElement = $element.find('.bookmark-button');
 
