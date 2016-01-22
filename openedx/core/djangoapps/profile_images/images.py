@@ -168,17 +168,21 @@ def _scale_image(image, side_length):
 
 def _create_image_file(image, exif):
     """
-    Given a PIL.Image object, and return a file-like object containing the data
-    saved as a JPEG.
+    Given a PIL.Image object, create and return a file-like object containing
+    the data saved as a JPEG.
 
     Note that the file object returned is a django ContentFile which holds data
     in memory (not on disk).
     """
     string_io = StringIO()
+
+    # The if/else dance below is required, because PIL raises an exception if
+    # you pass None as the value of the exif kwarg.
     if exif is None:
         image.save(string_io, format='JPEG')
     else:
         image.save(string_io, format='JPEG', exif=exif)
+
     image_file = ContentFile(string_io.getvalue())
     return image_file
 
@@ -230,9 +234,7 @@ def _user_friendly_size(size):
     """
     units = [_('bytes'), _('KB'), _('MB')]
     i = 0
-    while size >= 1024:
+    while size >= 1024 and i < len(units):
         size /= 1024
         i += 1
-        if i == len(units) - 1:
-            break
     return u'{} {}'.format(size, units[i])
