@@ -162,15 +162,15 @@ class TestGenerateProfileImages(TestCase):
 
     def test_jpeg_with_exif_orientation(self):
         requested_images = {10: "ten.jpg"}
-        orientation = 3
-        with make_image_file(orientation=orientation, extension='.jpg') as imfile:
+        rotate_90_clockwise = 8  # Value used in EXIF Orientation field.
+        with make_image_file(orientation=rotate_90_clockwise, extension='.jpg') as imfile:
             names_and_files = self._create_mocked_profile_images(imfile, requested_images)
         self.assertEqual(len(names_and_files), 1)
         for file_ in [nf[1] for nf in names_and_files]:
             with closing(Image.open(file_)) as image_obj:
                 self.assertEqual(image_obj.format, 'JPEG')
                 self.assertIn('exif', image_obj.info)
-                self.assertEqual(_get_exif_orientation(image_obj.info['exif']), 3)
+                self.assertEqual(_get_exif_orientation(image_obj.info['exif']), rotate_90_clockwise)
 
     def test_jpeg_without_exif_orientation(self):
         requested_images = {10: "ten.jpg"}

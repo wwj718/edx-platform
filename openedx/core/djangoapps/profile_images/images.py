@@ -38,9 +38,24 @@ IMAGE_TYPES = {
 
 def create_profile_images(image_file, profile_image_names):
     """
-    Generates a set of image files based on image_file and
-    stores them according to the sizes and filenames specified
-    in `profile_image_names`.
+    Generates a set of image files based on image_file and stores them
+    according to the sizes and filenames specified in `profile_image_names`.
+
+    Arguments:
+
+        image_file (file):
+            The uploaded image file to be cropped and scaled to use as a
+            profile image.  The image is cropped to the largest possible square,
+            and centered on this image.
+
+        profile_image_names (dict):
+            A dictionary that maps image sizes to file names.  The image size
+            is an integer representing one side of the equilateral image to be
+            created.
+
+    Returns:
+
+        None
     """
     storage = get_profile_image_storage()
 
@@ -143,15 +158,15 @@ def _set_color_mode_to_rgb(image):
     return image.convert('RGB')
 
 
-def _scale_image(image, size):
+def _scale_image(image, side_length):
     """
-    Given a PIL.Image object, get a resized copy with each side being `size`
-    pixels long.  The scaled image will always be square.
+    Given a PIL.Image object, get a resized copy with each side being
+    `side_length` pixels long.  The scaled image will always be square.
     """
-    return image.resize((size, size), Image.ANTIALIAS)
+    return image.resize((side_length, side_length), Image.ANTIALIAS)
 
 
-def _create_image_file(image_obj, exif):
+def _create_image_file(image, exif):
     """
     Given a PIL.Image object, and return a file-like object containing the data
     saved as a JPEG.
@@ -161,9 +176,9 @@ def _create_image_file(image_obj, exif):
     """
     string_io = StringIO()
     if exif is None:
-        image_obj.save(string_io, format='JPEG')
+        image.save(string_io, format='JPEG')
     else:
-        image_obj.save(string_io, format='JPEG', exif=exif)
+        image.save(string_io, format='JPEG', exif=exif)
     image_file = ContentFile(string_io.getvalue())
     return image_file
 
@@ -218,4 +233,6 @@ def _user_friendly_size(size):
     while size >= 1024:
         size /= 1024
         i += 1
+        if i == len(units) - 1:
+            break
     return u'{} {}'.format(size, units[i])

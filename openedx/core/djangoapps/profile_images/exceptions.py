@@ -14,5 +14,4 @@ class ImageValidationError(Exception):
         """
         Translate the developer-facing exception message for API clients.
         """
-        # pylint: disable=translation-of-non-string
-        return _(self.message)
+        return self.message
