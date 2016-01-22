@@ -35,7 +35,7 @@ CSS_CLASS_NAMES = {
     'captions_text': '.subtitles li',
     'captions_text_getter': '.subtitles li[role="link"][data-index="1"]',
     'closed_captions': '.closed-captions',
-    'error_message': '.video .video-player h3',
+    'error_message': '.video .video-player h4',
     'video_container': '.video',
     'video_sources': '.video-player video source',
     'video_spinner': '.video-wrapper .spinner',
