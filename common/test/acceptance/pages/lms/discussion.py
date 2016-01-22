@@ -195,7 +195,22 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
         """Replace the contents of the response editor"""
         self._find_within(".response_{} .discussion-response .wmd-input".format(response_id)).fill(new_body)
 
-    def add_content_via_editor_button(self, content_type, response_id, url, description):
+    def verify_link_editor_error_messages_shown(self):
+        """
+        Confirm that the error messages are displayed in the editor.
+        """
+        def errors_visible():
+            """
+            Returns True if both errors are visible, False otherwise.
+            """
+            return (
+                self.q(css="#new-url-input-field-message.has-error").visible and
+                self.q(css="#new-url-desc-input-field-message.has-error").visible
+            )
+
+        self.wait_for(errors_visible, "Form errors should be visible.")
+
+    def add_content_via_editor_button(self, content_type, response_id, url, description, is_decorative=False):
         """Replace the contents of the response editor"""
         self._find_within(
             "#wmd-{}-button-edit-post-body-{}".format(
@@ -205,6 +220,10 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
         ).click()
         self.q(css='#new-url-input').fill(url)
         self.q(css='#new-url-desc-input').fill(description)
+
+        if is_decorative:
+            self.q(css='#img-is-decorative').click()
+
         self.q(css='input[value="OK"]').click()
 
     def submit_response_edit(self, response_id, new_response_body):

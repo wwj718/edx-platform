@@ -30,8 +30,8 @@
                 <div id="new-url-desc-input-help" class="field-hint"><%= urlDescHelp %></div>
             </div>
             <div class="field"><% if (imageUploadHandler) { %>
-                <label for="img-is-descriptive" class="field-label label-inline">
-                    <input type="checkbox" id="img-is-descriptive" class="field-input input-checkbox">
+                <label for="img-is-decorative" class="field-label label-inline">
+                    <input type="checkbox" id="img-is-decorative" class="field-input input-checkbox">
                     <span class="field-input-label"> <%= imageIsDecorativeLabel %></span>
                 </label> <% }
             %></div>

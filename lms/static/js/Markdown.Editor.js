@@ -73,6 +73,7 @@
                                                   * its own image insertion dialog, this hook should return true, and the callback should be called with the chosen
                                                   * image url (or null if the user cancelled). If this hook returns false, the default dialog will be used.
                                                   */
+        this.util = util;
 
         this.getConverter = function () { return markdownConverter; }
 
@@ -267,7 +268,7 @@
 
     util.isValidUrl = function(url) {
         return /^((?:http|https|ftp):\/{2}|\/)[^]+$/.test(url);
-    }
+    };
 
     // Returns true if the DOM element is visible, false if it's hidden.
     // Checks if display is anything other than none.
@@ -1198,7 +1199,7 @@
                     document.getElementById("file-upload").click();
                     return false;
                 };
-                document.getElementById("img-is-descriptive").onchange = function () {
+                document.getElementById("img-is-decorative").onchange = function () {
                     descInput.required = !descInput.required;
                 };
             }
